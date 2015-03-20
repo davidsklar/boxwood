@@ -120,10 +120,9 @@ PHP_FUNCTION(boxwood_add_text)
 {
     struct bw_trie_t *trie;
     zval *znode;
-    char *text;
-    int text_len;
+    zend_string *text;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &znode, &text, &text_len) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rS", &znode, &text) == FAILURE) {
         RETURN_FALSE;
     }
 
@@ -131,7 +130,7 @@ PHP_FUNCTION(boxwood_add_text)
         RETURN_FALSE;
     }
 
-    int added = bw_add_text(trie, (byte *) text);
+    int added = bw_add_text(trie, (byte *) text->val);
     RETURN_LONG(added);
 
  }
@@ -230,10 +229,9 @@ PHP_FUNCTION(boxwood_set_word_boundary_bytes)
 {
     struct bw_trie_t *trie;
     zval *znode;
-    char *text;
-    int text_len;
+    zend_string *text;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &znode, &text, &text_len) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rS", &znode, &text) == FAILURE) {
         RETURN_FALSE;
     }
 
@@ -241,7 +239,7 @@ PHP_FUNCTION(boxwood_set_word_boundary_bytes)
         RETURN_FALSE;
     }
 
-    bw_set_word_boundary_bytes(trie, (byte *) text);
+    bw_set_word_boundary_bytes(trie, (byte *) text->val);
 }
 
 /*
