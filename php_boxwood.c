@@ -176,7 +176,7 @@ PHP_FUNCTION(boxwood_replace_text)
         RETURN_FALSE;
     }
     if (num_args == 4) {
-        if (Z_TYPE_P(zwordbound) != IS_BOOL) {
+        if ((Z_TYPE_P(zwordbound) != IS_TRUE) && (Z_TYPE_P(zwordbound) != IS_FALSE)) {
             php_error_docref(NULL TSRMLS_CC, E_ERROR, "Parameter mismatch: fourth argument must be a boolean");
             RETURN_FALSE;
         }
