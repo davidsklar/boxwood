@@ -63,7 +63,7 @@ zend_module_entry boxwood_module_entry = {
 ZEND_GET_MODULE(boxwood)
 #endif
 
-static void php_bw_trie_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
+static void php_bw_trie_dtor(zend_resource *rsrc TSRMLS_DC)
 {
     struct bw_trie_t *trie = (struct bw_trie_t *) rsrc->ptr;
     bw_free_trie(trie);
@@ -113,7 +113,7 @@ PHP_FUNCTION(boxwood_new)
     }
 
     struct bw_trie_t *trie = bw_create_trie((struct case_fold_branch_t *) (case_sensitive ? NULL : BOXWOOD_G(folding_trie)));
-    ZEND_REGISTER_RESOURCE(return_value, trie, le_bw_trie);
+    RETURN_RES(zend_register_resource(trie, le_bw_trie));
 }
 
 PHP_FUNCTION(boxwood_add_text)
@@ -126,8 +126,10 @@ PHP_FUNCTION(boxwood_add_text)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &znode, &text, &text_len) == FAILURE) {
         RETURN_FALSE;
     }
-    
-    ZEND_FETCH_RESOURCE(trie, struct bw_trie_t*, &znode, -1, PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie);
+
+    if (trie = (struct bw_trie_t *) zend_fetch_resource(Z_RES_P(znode), PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie)) {
+        RETURN_FALSE;
+    }
 
     int added = bw_add_text(trie, (byte *) text);
     RETURN_LONG(added);
@@ -197,7 +199,10 @@ PHP_FUNCTION(boxwood_replace_text)
         RETURN_FALSE;
     }
 
-    ZEND_FETCH_RESOURCE(trie, struct bw_trie_t*, &znode, -1, PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie);
+    if (trie = (struct bw_trie_t *) zend_fetch_resource(Z_RES_P(znode), PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie)) {
+        php_error_docref(NULL TSRMLS_CC, E_ERROR, "Parameter mismatch: first argument must be a Boxwood resource");
+        RETURN_FALSE;
+    }
 
     if (Z_TYPE_P(ztext) == IS_STRING) {
         result = (char *) bw_replace_text(trie, (byte *) Z_STRVAL_P(ztext), replacement[0], wordbound);
@@ -230,7 +235,9 @@ PHP_FUNCTION(boxwood_set_word_boundary_bytes)
         RETURN_FALSE;
     }
 
-    ZEND_FETCH_RESOURCE(trie, struct bw_trie_t*, &znode, -1, PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie);
+    if (trie = (struct bw_trie_t *) zend_fetch_resource(Z_RES_P(znode), PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie)) {
+        RETURN_FALSE;
+    }
 
     bw_set_word_boundary_bytes(trie, text);
 }
