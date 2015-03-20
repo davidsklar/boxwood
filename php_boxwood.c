@@ -206,7 +206,7 @@ PHP_FUNCTION(boxwood_replace_text)
 
     if (Z_TYPE_P(ztext) == IS_STRING) {
         result = (char *) bw_replace_text(trie, (byte *) Z_STRVAL_P(ztext), replacement[0], wordbound);
-        RETVAL_STRINGL(result, strlen(result), 1);
+        RETURN_STRING(result);
         free(result);
     }
     else {
@@ -218,7 +218,7 @@ PHP_FUNCTION(boxwood_replace_text)
              zend_hash_get_current_data_ex(arr, (void **) &one_text, &ptr) == SUCCESS;
              zend_hash_move_forward_ex(arr, &ptr)) {
             result = (char *) bw_replace_text(trie, (byte *) Z_STRVAL_PP(one_text), replacement[0], wordbound);
-            add_next_index_string(return_value, result, 1);
+            add_next_index_string(return_value, result);
             free(result);
         }
     }
