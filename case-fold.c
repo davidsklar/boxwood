@@ -65,7 +65,7 @@ struct case_fold_leaf_t *case_fold_find(struct case_fold_branch_t *root, byte *c
         else {
             if (root->leaf) {
                 return root->leaf;
-            } 
+            }
             else {
                 return NULL;
             }

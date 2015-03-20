@@ -22,7 +22,7 @@
 
 
 static byte *default_word_boundary_bytes = NULL;
-static byte *default_word_boundary_exceptions = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
+static byte *default_word_boundary_exceptions = (byte *) "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
 /** Default additional character to define as a word boundary. This
     8-bit character, which is invalid in utf8, is used by bazel as a
     placeholder for stripped html. As this module's implementation
@@ -102,7 +102,7 @@ static inline int string_is_multibyte(unsigned char *s, int len) {
 
 /**
  * Compute the length (in bytes) of the UTF-8 character whose
- * first byte is pointed to by s. 
+ * first byte is pointed to by s.
  *
  * @param s byte to check
  * @return integer
@@ -113,7 +113,7 @@ static inline int character_length(byte *s) {
     }
     else if ((s[0] & 0xE0) == 0xC0) {
         return 2;
-    } 
+    }
     else if ((s[0] & 0xF0) == 0xE0) {
         return 3;
     }
@@ -156,7 +156,7 @@ static inline int bw_node_has_next(struct bw_node_t *node, byte next) {
 }
 
 /**
- * Create a new boxwood node. 
+ * Create a new boxwood node.
  * The new node is marked as a leaf since it starts out having
  * nothing in its "next" array.
  *
@@ -172,7 +172,7 @@ static struct bw_node_t *bw_create_node() {
 /**
  * Create a new boxwood trie, providing a folding trie if you want the trie
  * to do case-insensitive matching.
- * 
+ *
  * @param folding_trie if provided, the replacements will be case-insensitive
  *  as per the mappings in this trie
  * @return bw_trie_t*
@@ -204,11 +204,11 @@ struct bw_trie_t *bw_create_trie(struct case_fold_branch_t *folding_trie) {
 int bw_add_text(struct bw_trie_t *trie, byte *text) {
     byte *text_to_add = (trie->case_insensitive && trie->folding_trie) ? case_fold_lower(trie->folding_trie, text, strlen((char *)text)) : text;
     int added = bw_add_bytes(trie, text_to_add, strlen((char *)text_to_add));
-    
+
     if (text_to_add != text) {
         free(text_to_add);
     }
-    
+
     return added;
 
 }
@@ -261,7 +261,7 @@ static void bw_walk_trie_proper(struct bw_node_t *n, int level, void (callback)(
 
 /**
  * Walk a trie, applying a callback to each node
- * 
+ *
  * @param trie the trie to walk
  * @param callback the callback to apply
  */
@@ -350,7 +350,7 @@ static int bw_replace_proper(struct bw_node_t *root, byte *modified_bytes, byte 
              * see if there was a previous node on our traversal that was marked
              * as terminal -- that means even though we didn't match the longer
              * word, there was a previous shorter prefix that we should treat as
-             * a match 
+             * a match
              */
             if ((! current_node->is_terminal) && previous_terminal) {
                 i = previous_terminal;
@@ -438,13 +438,11 @@ byte *bw_replace_text(struct bw_trie_t *trie, byte *text, byte replacement, int 
  * @return byte* newly allocated copy of the byte sequence with replacements
  */
 byte *bw_replace_binary(struct bw_trie_t *trie, byte *bytes, int c, byte replacement, int wordbound) {
-    
+
     byte *modified_bytes = (byte *) calloc(1, c);
     memcpy(modified_bytes, bytes, c);
 
     bw_replace_proper(trie->root, modified_bytes, bytes, c, replacement, 0, wordbound ? trie->word_boundary_chars : NULL);
-    
+
     return modified_bytes;
 }
-
-

@@ -127,7 +127,7 @@ PHP_FUNCTION(boxwood_add_text)
         RETURN_FALSE;
     }
 
-    if (trie = (struct bw_trie_t *) zend_fetch_resource(Z_RES_P(znode), PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie)) {
+    if ((trie = (struct bw_trie_t *) zend_fetch_resource(Z_RES_P(znode), PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie)) == NULL) {
         RETURN_FALSE;
     }
 
@@ -180,7 +180,11 @@ PHP_FUNCTION(boxwood_replace_text)
             php_error_docref(NULL TSRMLS_CC, E_ERROR, "Parameter mismatch: fourth argument must be a boolean");
             RETURN_FALSE;
         }
-        wordbound = Z_BVAL_P(zwordbound) ? 1 : 0;
+        if (Z_TYPE_P(zwordbound) == IS_TRUE) {
+            wordbound = 1;
+        } else {
+            wordbound = 0;
+        }
     }
 
     /*SEPARATE_ZVAL(&znode);
@@ -199,7 +203,7 @@ PHP_FUNCTION(boxwood_replace_text)
         RETURN_FALSE;
     }
 
-    if (trie = (struct bw_trie_t *) zend_fetch_resource(Z_RES_P(znode), PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie)) {
+    if ((trie = (struct bw_trie_t *) zend_fetch_resource(Z_RES_P(znode), PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie)) == NULL) {
         php_error_docref(NULL TSRMLS_CC, E_ERROR, "Parameter mismatch: first argument must be a Boxwood resource");
         RETURN_FALSE;
     }
@@ -211,16 +215,14 @@ PHP_FUNCTION(boxwood_replace_text)
     }
     else {
         array_init(return_value);
-        zval **one_text;
+        zval *one_text;
         HashTable *arr = Z_ARRVAL_P(ztext);
-        HashPosition ptr;
-		for (zend_hash_internal_pointer_reset_ex(arr, &ptr);
-             zend_hash_get_current_data_ex(arr, (void **) &one_text, &ptr) == SUCCESS;
-             zend_hash_move_forward_ex(arr, &ptr)) {
-            result = (char *) bw_replace_text(trie, (byte *) Z_STRVAL_PP(one_text), replacement[0], wordbound);
+
+        ZEND_HASH_FOREACH_VAL(arr, one_text) {
+            result = (char *) bw_replace_text(trie, (byte *) Z_STRVAL_P(one_text), replacement[0], wordbound);
             add_next_index_string(return_value, result);
             free(result);
-        }
+        } ZEND_HASH_FOREACH_END();
     }
 }
 
@@ -235,11 +237,11 @@ PHP_FUNCTION(boxwood_set_word_boundary_bytes)
         RETURN_FALSE;
     }
 
-    if (trie = (struct bw_trie_t *) zend_fetch_resource(Z_RES_P(znode), PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie)) {
+    if ((trie = (struct bw_trie_t *) zend_fetch_resource(Z_RES_P(znode), PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie)) == NULL) {
         RETURN_FALSE;
     }
 
-    bw_set_word_boundary_bytes(trie, text);
+    bw_set_word_boundary_bytes(trie, (byte *) text);
 }
 
 /*
