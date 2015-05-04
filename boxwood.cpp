@@ -22,7 +22,7 @@
 
 
 static byte *default_word_boundary_bytes = NULL;
-static byte *default_word_boundary_exceptions = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
+static byte *default_word_boundary_exceptions = (byte *) "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
 /** Default additional character to define as a word boundary. This
     8-bit character, which is invalid in utf8, is used by bazel as a
     placeholder for stripped html. As this module's implementation
@@ -50,7 +50,7 @@ void set_byte_mask(byte *mask, byte *text, int value) {
  */
 void bw_initialize_default_word_boundary_bytes() {
     if (default_word_boundary_bytes == NULL) {
-        default_word_boundary_bytes = calloc(256, 1);
+        default_word_boundary_bytes = (byte *) calloc(256, 1);
     }
 
     /* Initialize word boundary chars: all single bytes < 128 except
@@ -78,7 +78,7 @@ void bw_set_word_boundary_bytes(struct bw_trie_t *trie, byte *text) {
     if (trie->word_boundary_chars && trie->word_boundary_chars != default_word_boundary_bytes) {
         free(trie->word_boundary_chars);
     }
-    trie->word_boundary_chars = calloc(256, 1);
+    trie->word_boundary_chars = (byte *) calloc(256, 1);
     set_byte_mask(trie->word_boundary_chars, text, 1);
 }
 
@@ -321,7 +321,6 @@ void bw_free_trie(struct bw_trie_t *trie) {
     */
 static int bw_replace_proper(struct bw_node_t *root, byte *modified_bytes, byte *bytes_to_walk, int len, byte replacement, int check_multibyte, byte *word_boundary_chars) {
     int match_start_maybe, i = 0, shrunk_bytes = 0, previous_terminal = 0;
-    int endok = 0;
     struct bw_node_t *current_node;
 
     while (i < len) {

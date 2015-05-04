@@ -31,7 +31,7 @@ File.foreach('CaseFolding.txt') do |line|
   next unless ((status == 'C') || (status == 'S')) 
   upper = (upper.as_utf8.length > 1) ? "\\u#{upper}" : upper.as_utf8 
   lower = (lower.as_utf8.length > 1) ? "\\u#{lower}" : lower.as_utf8 
-  calls << "case_fold_map_add(root, \"#{upper}\", \"#{lower}\");"
+  calls << "case_fold_map_add(root, (byte *) \"#{upper}\", (byte *) \"#{lower}\");"
 end
 
 

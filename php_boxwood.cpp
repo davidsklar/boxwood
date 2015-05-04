@@ -74,7 +74,7 @@ static void php_bw_trie_dtor(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 PHP_MINIT_FUNCTION(boxwood)
 {
     le_bw_trie = zend_register_list_destructors_ex(php_bw_trie_dtor, NULL, PHP_BOXWOOD_TRIE_RES_NAME, module_number);
-    BOXWOOD_G(folding_trie) = calloc(1, sizeof(struct case_fold_branch_t));
+    BOXWOOD_G(folding_trie) = (struct case_fold_branch_t *) calloc(1, sizeof(struct case_fold_branch_t));
     case_fold_map_load((struct case_fold_branch_t *) BOXWOOD_G(folding_trie));
     bw_initialize_default_word_boundary_bytes();
 
@@ -232,7 +232,7 @@ PHP_FUNCTION(boxwood_set_word_boundary_bytes)
 
     ZEND_FETCH_RESOURCE(trie, struct bw_trie_t*, &znode, -1, PHP_BOXWOOD_TRIE_RES_NAME, le_bw_trie);
 
-    bw_set_word_boundary_bytes(trie, text);
+    bw_set_word_boundary_bytes(trie, (byte *) text);
 }
 
 /*
