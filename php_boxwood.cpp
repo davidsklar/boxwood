@@ -59,6 +59,10 @@ zend_module_entry boxwood_module_entry = {
 };
 /* }}} */
 
+#if defined(HHVM)
+  #define COMPILE_DL_BOXWOOD 1
+#endif
+
 #ifdef COMPILE_DL_BOXWOOD
 ZEND_GET_MODULE(boxwood)
 #endif
