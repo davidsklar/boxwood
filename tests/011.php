@@ -1,8 +1,3 @@
---TEST--
-Word boundary tests
---SKIPIF--
-<?php if (!extension_loaded("boxwood")) echo "skip"; ?>
---FILE--
 <?php 
 $r = boxwood_new();
 boxwood_add_text($r, "xxx");
@@ -31,48 +26,3 @@ foreach ($tests as $test) {
     echo "\n";
 }
 ?>
---EXPECTF--
-aaa x** bbb
-aaa x** bbb
-
-aaax**
-aaaxxx
-
-x**bbb
-xxxbbb
-
-aaax**bbb
-aaaxxxbbb
-
-aaa(x**)bbb
-aaa(x**)bbb
-
-x** bbb
-x** bbb
-
-aaa x**
-aaa x**
-
-aaa?x**!bbb
-aaa?x**!bbb
-
-ax**
-axxx
-
-x**b
-xxxb
-
-x**
-x**
-
-(x**
-(x**
-
-x**)
-x**)
-
-aaa%ax**
-aaa%ax**
-
-aaa%ax**
-aaa%axxx

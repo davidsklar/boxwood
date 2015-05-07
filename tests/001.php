@@ -1,8 +1,3 @@
---TEST--
-Check for boxwood presence
---SKIPIF--
-<?php if (!extension_loaded("boxwood")) print "skip"; ?>
---FILE--
 <?php 
 echo "boxwood extension is available";
 /*
@@ -17,5 +12,3 @@ echo "boxwood extension is available";
   writing regression tests
 */
 ?>
---EXPECT--
-boxwood extension is available
